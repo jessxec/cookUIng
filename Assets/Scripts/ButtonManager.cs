@@ -17,10 +17,13 @@ public class ButtonManager : MonoBehaviour
     private bool selectedPan;
     private bool selectedPot;
     private bool heatOn;
-    private string temp = "off";
+    private bool temp;
     private float multiplier;
     private float cookingTime;
     private float startTime = 50f;
+
+    public string[] eggStates = {"uncooked", "low", "med", "hard", "burnt"};
+    public string eggIs;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +34,9 @@ public class ButtonManager : MonoBehaviour
         selectedPot = false;
         heatOn = false;
         cookingTime = startTime;
+        temp = false;
+        eggIs = eggStates[0];
+
     }
 
     // Update is called once per frame
@@ -45,32 +51,36 @@ public class ButtonManager : MonoBehaviour
             Debug.Log(direction);
             if ((direction.x >= 0.15 || direction.x <= -0.15) && (direction.y >= 0.15 || direction.y <= -0.15))
             {
+                // off
                 if ((direction.x >= -0.5 || direction.x <= 0.5) && (direction.y >= 0.5))
                 {
-                    temp = "off";
+                    temp = false;
                     multiplier = 0f;
                     heatDial.transform.up = new Vector2(0, 1);
-                }
+                } // med
                 else if ((direction.x >= -0.5 || direction.x <= 0.5) && (direction.y <= -0.5))
                 {
-                    temp = "med";
+                    temp = true;
                     multiplier = 2f;
                     heatDial.transform.up = new Vector2(0, -1);
-                }
+                } // high
                 else if ((direction.y >= -0.5 || direction.y <= 0.5) && (direction.x <= -0.5))
                 {
-                    temp = "high";
+                    temp = true;
                     multiplier = 4f;
                     heatDial.transform.up = new Vector2(-1, 0);
-                }
+                } // low
                 else if ((direction.y >= -0.5 || direction.y <= 0.5) && (direction.x >= 0.5))
                 {
-                    temp = "low";
+                    temp = true;
                     multiplier = 1f;
                     heatDial.transform.up = new Vector2(1, 0);
                 }
             }
 
+        }
+        if (temp && gotEgg && (selectedPan || selectedPot) && cookingTime >= 0)
+        {
             cookingTime -= Time.deltaTime * multiplier;
             TimerOn();
         }
@@ -105,6 +115,43 @@ public class ButtonManager : MonoBehaviour
     {
         timer.fillAmount = 1- (1- (cookingTime / startTime)) ;
     }
+
+    public void GetResults()
+    {
+        temp = false;
+        pan.interactable = false;
+        pot.interactable = false;
+        heat.interactable = false;
+
+        // burnt
+        if (cookingTime <= 0)
+        {
+            eggIs = eggStates[4];
+            Debug.Log("your egg is burnt!! :(");
+        } // uncooked
+        else if (cookingTime == startTime)
+        {
+            eggIs = eggStates[0];
+            Debug.Log("you have an egg! ... uncooked :0");
+        } // undercooked
+        else if (cookingTime < 50 && cookingTime >= 20)
+        {
+            eggIs = eggStates[1];
+            Debug.Log("soft egg");
+        } // med
+        else if (cookingTime < 20 && cookingTime >= 12)
+        {
+            eggIs = eggStates[2];
+            Debug.Log("med egg");
+        } // hard
+        else if (cookingTime < 12 && cookingTime > 0)
+        {
+            eggIs = eggStates[3];
+            Debug.Log("hard egg");
+        }
+    }
+
+
 
 
 }
