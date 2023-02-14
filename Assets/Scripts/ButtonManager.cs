@@ -10,6 +10,7 @@ public class ButtonManager : MonoBehaviour
     public Button pot;
     public Button heat;
     public GameObject heatDial;
+    public GameObject panel;
 
     public Image timer;
 
@@ -23,7 +24,11 @@ public class ButtonManager : MonoBehaviour
     private float startTime = 50f;
 
     public string[] eggStates = {"uncooked", "low", "med", "hard", "burnt"};
+
+    public Sprite[] boiledEgg;
     public string eggIs;
+
+    public Image eggImage;
 
     // Start is called before the first frame update
     void Start()
@@ -36,6 +41,7 @@ public class ButtonManager : MonoBehaviour
         cookingTime = startTime;
         temp = false;
         eggIs = eggStates[0];
+        panel.SetActive(false);
 
     }
 
@@ -127,28 +133,38 @@ public class ButtonManager : MonoBehaviour
         if (cookingTime <= 0)
         {
             eggIs = eggStates[4];
+            //eggImage.sprite = boiledEgg[4];
             Debug.Log("your egg is burnt!! :(");
         } // uncooked
         else if (cookingTime == startTime)
         {
             eggIs = eggStates[0];
+            //eggImage.sprite = boiledEgg[0];
             Debug.Log("you have an egg! ... uncooked :0");
         } // undercooked
         else if (cookingTime < 50 && cookingTime >= 20)
         {
             eggIs = eggStates[1];
+            eggImage.sprite = boiledEgg[2];
             Debug.Log("soft egg");
         } // med
         else if (cookingTime < 20 && cookingTime >= 12)
         {
             eggIs = eggStates[2];
+            eggImage.sprite = boiledEgg[1];
             Debug.Log("med egg");
         } // hard
         else if (cookingTime < 12 && cookingTime > 0)
         {
             eggIs = eggStates[3];
+            eggImage.sprite = boiledEgg[0];
             Debug.Log("hard egg");
         }
+
+        // pop out panel for finished egg dish
+        panel.SetActive(true);
+
+
     }
 
 
