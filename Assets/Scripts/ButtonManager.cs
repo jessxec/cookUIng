@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class ButtonManager : MonoBehaviour
 {
@@ -12,8 +13,8 @@ public class ButtonManager : MonoBehaviour
     public Button heat;
     public Button collectable;
     public Button restart;
-    public GameObject collection;
 
+    public GameObject collection;
     public GameObject heatDial;
     public GameObject panel;
 
@@ -39,6 +40,10 @@ public class ButtonManager : MonoBehaviour
     public Sprite[] omlette;
     public Sprite bastedEgg;
     public Sprite steamedEgg;
+
+    public TMP_Text message;
+    public TMP_Text header;
+    public TMP_Text result;
   
     public string eggIs;
 
@@ -57,6 +62,7 @@ public class ButtonManager : MonoBehaviour
         eggIs = eggStates[0];
         panel.SetActive(false);
         collection.SetActive(false);
+        message.text = "make an egg please!";
     }
 
     // Update is called once per frame
@@ -69,7 +75,7 @@ public class ButtonManager : MonoBehaviour
 
             Vector2 direction = (mouseScreenPosition - (Vector2)heatDial.transform.position).normalized;
             Debug.Log(direction);
-            if ((direction.x >= 0.15 || direction.x <= -0.15) && (direction.y >= 0.15 || direction.y <= -0.15))
+            if ((direction.x >= 0.3 || direction.x <= -0.3) && (direction.y >= 0.3 || direction.y <= -0.3))
             {
                 // off
                 if ((direction.x >= -0.5 || direction.x <= 0.5) && (direction.y >= 0.5))
@@ -77,24 +83,28 @@ public class ButtonManager : MonoBehaviour
                     temp = false;
                     multiplier = 0f;
                     heatDial.transform.up = new Vector2(0, 1);
+                    message.text = "the stove is off";
                 } // med
                 else if ((direction.x >= -0.5 || direction.x <= 0.5) && (direction.y <= -0.5))
                 {
                     temp = true;
                     multiplier = 2f;
                     heatDial.transform.up = new Vector2(0, -1);
+                    message.text = "its getting warmer!";
                 } // high
                 else if ((direction.y >= -0.5 || direction.y <= 0.5) && (direction.x <= -0.5))
                 {
                     temp = true;
                     multiplier = 4f;
                     heatDial.transform.up = new Vector2(-1, 0);
+                    message.text = "woah! its hot!";
                 } // low
                 else if ((direction.y >= -0.5 || direction.y <= 0.5) && (direction.x >= 0.5))
                 {
                     temp = true;
                     multiplier = 1f;
                     heatDial.transform.up = new Vector2(1, 0);
+                    message.text = "its warming up...";
                 }
             }
 
@@ -110,6 +120,7 @@ public class ButtonManager : MonoBehaviour
     {
         gotEgg = true;
         egg.interactable = false;
+        message.text = "u have an egg...";
     }
 
     public void PanButton()
@@ -117,6 +128,7 @@ public class ButtonManager : MonoBehaviour
         selectedPan = true;
         pan.enabled = false;
         pot.interactable = false;
+        message.text = "u have a pan...";
     }
 
     public void PotButton()
@@ -124,6 +136,7 @@ public class ButtonManager : MonoBehaviour
         selectedPot = true;
         pot.enabled = false;
         pan.interactable = false;
+        message.text = "u have a pot...";
     }
 
     public void HeatButton()
@@ -144,42 +157,109 @@ public class ButtonManager : MonoBehaviour
         pot.interactable = false;
         heat.interactable = false;
 
+        if (selectedPan)
+        {
+            PanOptions();
+        } else if (selectedPot)
+        {
+            PotOptions();
+        } else
+        {
+            SteamerOptions();
+        }
+        
+        // pop out panel for finished egg dish
+        panel.SetActive(true);
+        header.text = "eggcellent!";
+
+    }
+
+    private void PotOptions()
+    {
         // burnt
         if (cookingTime <= 0)
         {
+            GameManager.S.UpdateCollection("overboiled");
             eggIs = eggStates[4];
-            //eggImage.sprite = boiledEgg[4];
-            Debug.Log("your egg is burnt!! :(");
+            eggImage.sprite = boiledEgg[3];
+            result.text = ("your egg is overboiled!! :(");
+            
+        } // uncooked
+        if (cookingTime == startTime)
+        {
+            GameManager.S.UpdateCollection("egg");
+            eggImage.sprite = uncookedEgg;
+            eggIs = eggStates[0];
+            result.text = ("you have an egg! ... uncooked :0");
+        } // undercooked
+        if (cookingTime < 50 && cookingTime >= 20)
+        {
+            GameManager.S.UpdateCollection("softboiled");
+            eggIs = eggStates[1];
+            eggImage.sprite = boiledEgg[0];
+            result.text = ("soft boiled egg <3");
+        } // med
+        if (cookingTime < 20 && cookingTime >= 12)
+        {
+            GameManager.S.UpdateCollection("medboiled");
+            eggIs = eggStates[2];
+            eggImage.sprite = boiledEgg[1];
+            result.text = ("medium boiled egg <3");
+        } // hard
+        if (cookingTime < 12 && cookingTime > 0)
+        {
+            GameManager.S.UpdateCollection("hardboiled");
+            eggIs = eggStates[3];
+            eggImage.sprite = boiledEgg[2];
+            result.text = ("hard boiled egg <3");
+        }
+
+    }
+
+    private void PanOptions()
+    {
+        if (cookingTime <= 0)
+        {
+            eggIs = eggStates[4];
+            eggImage.sprite = boiledEgg[3];
+            result.text = ("your egg is overboiled!! :(");
         } // uncooked
         if (cookingTime == startTime)
         {
             eggImage.sprite = uncookedEgg;
             eggIs = eggStates[0];
-            //eggImage.sprite = boiledEgg[0];
-            Debug.Log("you have an egg! ... uncooked :0");
+            result.text = ("you have an egg! ... uncooked :0");
         } // undercooked
         if (cookingTime < 50 && cookingTime >= 20)
         {
             eggIs = eggStates[1];
-            eggImage.sprite = boiledEgg[2];
-            Debug.Log("soft egg");
+            eggImage.sprite = boiledEgg[0];
+            result.text = ("soft boiled egg <3");
         } // med
         if (cookingTime < 20 && cookingTime >= 12)
         {
             eggIs = eggStates[2];
             eggImage.sprite = boiledEgg[1];
-            Debug.Log("med egg");
+            result.text = ("medium boiled egg <3");
         } // hard
         if (cookingTime < 12 && cookingTime > 0)
         {
             eggIs = eggStates[3];
-            eggImage.sprite = boiledEgg[0];
-            Debug.Log("hard egg");
+            eggImage.sprite = boiledEgg[2];
+            result.text = ("hard boiled egg <3");
         }
 
-        // pop out panel for finished egg dish
-        panel.SetActive(true);
+    }
 
+    private void SteamerOptions()
+    {
+        if (cookingTime == startTime)
+        {
+            GameManager.S.UpdateCollection("egg");
+            eggImage.sprite = uncookedEgg;
+            eggIs = eggStates[0];
+            result.text = ("you have an egg! ... uncooked :0");
+        }
     }
 
     public void Restart()
@@ -191,6 +271,7 @@ public class ButtonManager : MonoBehaviour
     {
         collection.SetActive(!collectionOn);
         collectionOn = !collectionOn;
+        header.text = "collection";
     }
 
 

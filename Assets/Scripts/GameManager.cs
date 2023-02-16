@@ -5,27 +5,35 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager gameManager;
+    public static GameManager S;
 
     public Image[] collectables;
 
+
     private void Awake()
     {
-        gameManager = this;
-        DontDestroyOnLoad(gameObject);
+        S = this;
+        DontDestroyOnLoad(this);
+        foreach (var img in collectables)
+        {
+            img.color = new Color32(0, 0, 0, 90);
+        }
     }
     // Start is called before the first frame update
     void Start()
     {
-        foreach (var img in collectables)
-        {
-            img.color = new Color32(0,0,0,90);
-        }
+  
     }
 
-    // Update is called once per frame
-    void Update()
+    public void UpdateCollection(string eggName)
     {
-        
+        foreach (var img in collectables)
+        {
+            Debug.Log(img.name);
+            if (img.name == eggName)
+            {
+                img.color = new Color(1, 1, 1, 1);
+            }
+        }
     }
 }
