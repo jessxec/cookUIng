@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class ButtonManager : MonoBehaviour
 {
@@ -9,11 +10,16 @@ public class ButtonManager : MonoBehaviour
     public Button pan;
     public Button pot;
     public Button heat;
+    public Button collectable;
+    public Button restart;
+    public GameObject collection;
+
     public GameObject heatDial;
     public GameObject panel;
 
     public Image timer;
 
+    private bool collectionOn = false;
     private bool gotEgg;
     private bool selectedPan;
     private bool selectedPot;
@@ -24,8 +30,16 @@ public class ButtonManager : MonoBehaviour
     private float startTime = 50f;
 
     public string[] eggStates = {"uncooked", "low", "med", "hard", "burnt"};
+    public bool isBoiled = false;
 
+    public Sprite uncookedEgg;
     public Sprite[] boiledEgg;
+    public Sprite[] friedEgg;
+    public Sprite[] scrambledEgg;
+    public Sprite[] omlette;
+    public Sprite bastedEgg;
+    public Sprite steamedEgg;
+  
     public string eggIs;
 
     public Image eggImage;
@@ -42,7 +56,7 @@ public class ButtonManager : MonoBehaviour
         temp = false;
         eggIs = eggStates[0];
         panel.SetActive(false);
-
+        collection.SetActive(false);
     }
 
     // Update is called once per frame
@@ -125,6 +139,7 @@ public class ButtonManager : MonoBehaviour
     public void GetResults()
     {
         temp = false;
+        multiplier = 0;
         pan.interactable = false;
         pot.interactable = false;
         heat.interactable = false;
@@ -136,25 +151,26 @@ public class ButtonManager : MonoBehaviour
             //eggImage.sprite = boiledEgg[4];
             Debug.Log("your egg is burnt!! :(");
         } // uncooked
-        else if (cookingTime == startTime)
+        if (cookingTime == startTime)
         {
+            eggImage.sprite = uncookedEgg;
             eggIs = eggStates[0];
             //eggImage.sprite = boiledEgg[0];
             Debug.Log("you have an egg! ... uncooked :0");
         } // undercooked
-        else if (cookingTime < 50 && cookingTime >= 20)
+        if (cookingTime < 50 && cookingTime >= 20)
         {
             eggIs = eggStates[1];
             eggImage.sprite = boiledEgg[2];
             Debug.Log("soft egg");
         } // med
-        else if (cookingTime < 20 && cookingTime >= 12)
+        if (cookingTime < 20 && cookingTime >= 12)
         {
             eggIs = eggStates[2];
             eggImage.sprite = boiledEgg[1];
             Debug.Log("med egg");
         } // hard
-        else if (cookingTime < 12 && cookingTime > 0)
+        if (cookingTime < 12 && cookingTime > 0)
         {
             eggIs = eggStates[3];
             eggImage.sprite = boiledEgg[0];
@@ -164,7 +180,17 @@ public class ButtonManager : MonoBehaviour
         // pop out panel for finished egg dish
         panel.SetActive(true);
 
+    }
 
+    public void Restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void CollectionBtn()
+    {
+        collection.SetActive(!collectionOn);
+        collectionOn = !collectionOn;
     }
 
 
