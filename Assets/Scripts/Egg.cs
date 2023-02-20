@@ -4,9 +4,20 @@ using UnityEngine;
 
 public class Egg : MonoBehaviour
 {
+    public static Egg instance;
     private void Awake()
     {
-        DontDestroyOnLoad(this);
+        if (instance == null)
+        {
+            instance = this;
+        } else
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+
+        DontDestroyOnLoad(this.gameObject);
+
     }
     // Start is called before the first frame update
     void Start()

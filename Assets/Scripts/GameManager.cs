@@ -6,24 +6,24 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public static GameManager S;
-
     public Image[] collectables;
 
 
     private void Awake()
     {
-        S = this;
-        DontDestroyOnLoad(this);
-        foreach (var img in collectables)
+        if (S == null)
         {
-            img.color = new Color32(0, 0, 0, 90);
+            S = this;
         }
+        else
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+
+        DontDestroyOnLoad(this);
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-  
-    }
+
 
     public void UpdateCollection(string eggName)
     {

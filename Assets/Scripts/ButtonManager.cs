@@ -30,8 +30,6 @@ public class ButtonManager : MonoBehaviour
     private float cookingTime;
     private float startTime = 50f;
 
-    public string[] eggStates = {"uncooked", "low", "med", "hard", "burnt"};
-    public bool isBoiled = false;
 
     public Sprite uncookedEgg;
     public Sprite[] boiledEgg;
@@ -59,11 +57,21 @@ public class ButtonManager : MonoBehaviour
         heatOn = false;
         cookingTime = startTime;
         temp = false;
-        eggIs = eggStates[0];
         panel.SetActive(false);
-        collection.SetActive(false);
         message.text = "make an egg please!";
+
+        //SceneManager.sceneLoaded -= OnSceneLoaded;
+        //SceneManager.sceneLoaded += OnSceneLoaded;
+        collection = GameObject.Find("/CollectionPanel/Scroll View");
+        Debug.Log("Start Found Collection:" + collection.GetInstanceID());
+        collection.SetActive(false);
     }
+
+    /*void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        collection = GameObject.Find("/CollectionPanel/Scroll View");
+    }*/
+
 
     // Update is called once per frame
     void FixedUpdate()
@@ -180,7 +188,6 @@ public class ButtonManager : MonoBehaviour
         if (cookingTime <= 0)
         {
             GameManager.S.UpdateCollection("overboiled");
-            eggIs = eggStates[4];
             eggImage.sprite = boiledEgg[3];
             result.text = ("your egg is overboiled!! :(");
             
@@ -189,27 +196,23 @@ public class ButtonManager : MonoBehaviour
         {
             GameManager.S.UpdateCollection("egg");
             eggImage.sprite = uncookedEgg;
-            eggIs = eggStates[0];
             result.text = ("you have an egg! ... uncooked :0");
         } // undercooked
         if (cookingTime < 50 && cookingTime >= 20)
         {
             GameManager.S.UpdateCollection("softboiled");
-            eggIs = eggStates[1];
             eggImage.sprite = boiledEgg[0];
             result.text = ("soft boiled egg <3");
         } // med
         if (cookingTime < 20 && cookingTime >= 12)
         {
             GameManager.S.UpdateCollection("medboiled");
-            eggIs = eggStates[2];
             eggImage.sprite = boiledEgg[1];
             result.text = ("medium boiled egg <3");
         } // hard
         if (cookingTime < 12 && cookingTime > 0)
         {
             GameManager.S.UpdateCollection("hardboiled");
-            eggIs = eggStates[3];
             eggImage.sprite = boiledEgg[2];
             result.text = ("hard boiled egg <3");
         }
@@ -220,33 +223,33 @@ public class ButtonManager : MonoBehaviour
     {
         if (cookingTime <= 0)
         {
-            eggIs = eggStates[4];
-            eggImage.sprite = boiledEgg[3];
-            result.text = ("your egg is overboiled!! :(");
+            GameManager.S.UpdateCollection("burnt");
+            eggImage.sprite = friedEgg[3];
+            result.text = ("your egg is burnt!! :(");
         } // uncooked
         if (cookingTime == startTime)
         {
+            GameManager.S.UpdateCollection("egg");
             eggImage.sprite = uncookedEgg;
-            eggIs = eggStates[0];
             result.text = ("you have an egg! ... uncooked :0");
         } // undercooked
         if (cookingTime < 50 && cookingTime >= 20)
         {
-            eggIs = eggStates[1];
-            eggImage.sprite = boiledEgg[0];
-            result.text = ("soft boiled egg <3");
+            GameManager.S.UpdateCollection("sunnyup");
+            eggImage.sprite = friedEgg[0];
+            result.text = ("sunny-side up egg <3");
         } // med
         if (cookingTime < 20 && cookingTime >= 12)
         {
-            eggIs = eggStates[2];
-            eggImage.sprite = boiledEgg[1];
-            result.text = ("medium boiled egg <3");
+            GameManager.S.UpdateCollection("overeasy");
+            eggImage.sprite = friedEgg[1];
+            result.text = ("over easy egg <3");
         } // hard
         if (cookingTime < 12 && cookingTime > 0)
         {
-            eggIs = eggStates[3];
-            eggImage.sprite = boiledEgg[2];
-            result.text = ("hard boiled egg <3");
+            GameManager.S.UpdateCollection("overhard");
+            eggImage.sprite = friedEgg[2];
+            result.text = ("over hard egg <3");
         }
 
     }
@@ -257,13 +260,13 @@ public class ButtonManager : MonoBehaviour
         {
             GameManager.S.UpdateCollection("egg");
             eggImage.sprite = uncookedEgg;
-            eggIs = eggStates[0];
             result.text = ("you have an egg! ... uncooked :0");
         }
     }
 
     public void Restart()
     {
+        collection.SetActive(true);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
