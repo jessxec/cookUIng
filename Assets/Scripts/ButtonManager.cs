@@ -24,11 +24,19 @@ public class ButtonManager : MonoBehaviour
     private bool gotEgg;
     private bool selectedPan;
     private bool selectedPot;
+    private bool selectedSteamer;
     private bool heatOn;
     private bool temp;
+    private bool water;
+    private bool oil;
+    private bool flip;
+    private bool stirBefore;
+    private bool stirAfter;
+
     private float multiplier;
     private float cookingTime;
     private float startTime = 50f;
+
 
 
     public Sprite uncookedEgg;
@@ -42,8 +50,7 @@ public class ButtonManager : MonoBehaviour
     public TMP_Text message;
     public TMP_Text header;
     public TMP_Text result;
-  
-    public string eggIs;
+ 
 
     public Image eggImage;
 
@@ -152,6 +159,16 @@ public class ButtonManager : MonoBehaviour
         heatOn = !heatOn;
     }
 
+    public void OilButton()
+    {
+        oil = true;
+    }
+
+    public void WaterButton()
+    {
+        water = true;
+    }
+
     private void TimerOn()
     {
         timer.fillAmount = 1- (1- (cookingTime / startTime)) ;
@@ -165,15 +182,36 @@ public class ButtonManager : MonoBehaviour
         pot.interactable = false;
         heat.interactable = false;
 
-        if (selectedPan)
+        // if no oil and water, burn
+
+        
+        //bool fried = (selectedPan || selectedPot) && oil;
+        //bool boiled = selectedPot && water;
+        //bool omlette = (selectedPot || selectedPan) && oil && stir;
+        //bool basted = selectedSteamer && water;
+        //bool steamed = selectedSteamer && water && stir;
+
+        // fried
+        if ((selectedPan || selectedPot) && oil)
         {
-            PanOptions();
-        } else if (selectedPot)
+            FriedOptions();
+        }
+        // boiled
+        else if (selectedPot && water)
         {
-            PotOptions();
-        } else
+            BoiledOptions();
+        // steamed
+        } else if (selectedSteamer&& water)
         {
             SteamerOptions();
+        } else if ((selectedPot || selectedPan) && oil && stirBefore)
+        {
+            OmletteOptions();
+        } else
+        {
+            GameManager.S.UpdateCollection("egg");
+            eggImage.sprite = uncookedEgg;
+            result.text = ("you have an egg! ... uncooked :0");
         }
         
         // pop out panel for finished egg dish
@@ -182,7 +220,55 @@ public class ButtonManager : MonoBehaviour
 
     }
 
-    private void PotOptions()
+    private void OmletteOptions()
+    {
+        if (!flip && !stirAfter)
+        {
+            GameManager.S.UpdateCollection("unscrambled");
+            eggImage.sprite = omlette[0];
+            result.text = ("not a omlette, not scrambled eggs, its...");
+        } else if (flip && cookingTime <= 0)
+        {
+            GameManager.S.UpdateCollection("burntomlette");
+            eggImage.sprite = omlette[3];
+            result.text = ("crispy scrambled eggs :0");
+        } else if (flip && cookingTime < 50 && cookingTime > 0)
+        {
+            GameManager.S.UpdateCollection("omlette");
+            eggImage.sprite = omlette[1];
+            result.text = ("its a omlette <3");
+        }
+
+        else if (cookingTime <= 0 && stirAfter)
+        // burnt
+        {
+            GameManager.S.UpdateCollection("burntscrambled");
+            eggImage.sprite = scrambledEgg[3];
+            result.text = ("crispy scrambled eggs :0");
+
+        } // uncooked
+        else if (cookingTime == startTime)
+        {
+            GameManager.S.UpdateCollection("egg");
+            eggImage.sprite = uncookedEgg;
+            result.text = ("you have an egg! ... uncooked :0");
+        } // scrambled
+        else if (cookingTime < 50 && cookingTime >= 30 && stirAfter)
+        {
+            GameManager.S.UpdateCollection("scrambled");
+            eggImage.sprite = scrambledEgg[1];
+            result.text = ("scrambled eggs <3");
+        } // hard
+        else if (cookingTime < 12 && cookingTime > 0 && stirAfter)
+        {
+            GameManager.S.UpdateCollection("overscrambled");
+            eggImage.sprite = scrambledEgg[2];
+            result.text = ("overscrambled eggs <3");
+        }
+
+    }
+
+    private void BoiledOptions()
     {
         // burnt
         if (cookingTime <= 0)
@@ -219,7 +305,7 @@ public class ButtonManager : MonoBehaviour
 
     }
 
-    private void PanOptions()
+    private void FriedOptions()
     {
         if (cookingTime <= 0)
         {
@@ -256,11 +342,16 @@ public class ButtonManager : MonoBehaviour
 
     private void SteamerOptions()
     {
-        if (cookingTime == startTime)
+        if (!stirBefore)
         {
-            GameManager.S.UpdateCollection("egg");
-            eggImage.sprite = uncookedEgg;
-            result.text = ("you have an egg! ... uncooked :0");
+            GameManager.S.UpdateCollection("basted");
+            eggImage.sprite = bastedEgg;
+            result.text = ("basted egg <3");
+        }
+        else {
+            GameManager.S.UpdateCollection("steamed");
+            eggImage.sprite = steamedEgg;
+            result.text = ("steamed egg <3");
         }
     }
 
