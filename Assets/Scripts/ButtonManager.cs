@@ -45,7 +45,7 @@ public class ButtonManager : MonoBehaviour
     private bool doneCooking;
     private bool selectedKetchup;
     private bool selectedGreens;
-    
+
 
     private float multiplier;
     private float cookingTime;
@@ -59,7 +59,7 @@ public class ButtonManager : MonoBehaviour
     public Sprite[] scrambledEgg;
     public Sprite[] omlette;
     public Sprite bastedEgg;
-    public Sprite steamedEgg;
+    public Sprite[] steamedEgg;
 
     public TMP_Text message;
     public TMP_Text header;
@@ -91,13 +91,14 @@ public class ButtonManager : MonoBehaviour
         oil = false;
         water = false;
         ketchup.interactable = false;
+        soy.interactable = false;
+        greenOnions.interactable = false;
        
 
         collection = GameObject.Find("/CollectionPanel/Scroll View");
         Debug.Log("Start Found Collection:" + collection.GetInstanceID());
         collection.SetActive(false);
     }
-
 
     // Update is called once per frame
     void FixedUpdate()
@@ -241,6 +242,45 @@ public class ButtonManager : MonoBehaviour
         waterBtn.interactable = false;
     }
 
+    public void OnionButton()
+    {
+        selectedGreens = true;
+        message.text = "u added some green onions...";
+        greenOnions.interactable = false;
+    }
+
+    public void SoyButton()
+    {
+        selectedSoy = true;
+        message.text = "u added some soy sauce...";
+        soy.interactable = false;
+    }
+
+    public void KetchupButton()
+    {
+        selectedKetchup = true;
+        message.text = "u added some ketchup...";
+        ketchup.interactable = false;
+    }
+
+    public void Plate()
+    {
+        if (selectedPot && stirBefore)
+        {
+            soy.interactable = true;
+            greenOnions.interactable = true;
+        }
+
+        if (flip && stirBefore)
+        {
+            ketchup.interactable = true;
+        }
+        
+        heat.interactable = false;
+        stirBtn.interactable = false;
+        flipBtn.interactable = false;
+    }
+
     private void TimerOn()
     {
         timer.fillAmount = 1- (1- (cookingTime / startTime)) ;
@@ -317,6 +357,13 @@ public class ButtonManager : MonoBehaviour
             GameManager.S.UpdateCollection("omlette");
             eggImage.sprite = omlette[1];
             result.text = ("its a omlette <3");
+        }
+
+        if (flip && selectedKetchup)
+        {
+            GameManager.S.UpdateCollection("ketchupom");
+            eggImage.sprite = omlette[1];
+            result.text = ("its a <3 omlette :D");
         }
 
         else if (cookingTime <= 15 && stirAfter)
@@ -428,9 +475,25 @@ public class ButtonManager : MonoBehaviour
             eggImage.sprite = bastedEgg;
             result.text = ("basted egg <3");
         }
-        else {
+        else if (selectedSoy && !selectedGreens)
+        {
+            GameManager.S.UpdateCollection("steamedsoy");
+            eggImage.sprite = steamedEgg[2];
+            result.text = ("steamed egg with soy sauce <3");
+        }
+        else if (!selectedSoy && selectedGreens)
+        {
+            GameManager.S.UpdateCollection("steamedgreen");
+            eggImage.sprite = steamedEgg[1];
+            result.text = ("steamed egg with green onions <3");
+        } else if (selectedSoy && selectedGreens)
+        {
+            GameManager.S.UpdateCollection("steamedall");
+            eggImage.sprite = steamedEgg[3];
+            result.text = ("steamed egg with the works <3");
+        } else {
             GameManager.S.UpdateCollection("steamed");
-            eggImage.sprite = steamedEgg;
+            eggImage.sprite = steamedEgg[0];
             result.text = ("steamed egg <3");
         }
     }
