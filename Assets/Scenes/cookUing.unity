@@ -7081,6 +7081,8 @@ MonoBehaviour:
   heat: {fileID: 658100233}
   collectable: {fileID: 31615805}
   restart: {fileID: 1532537016}
+  oilBtn: {fileID: 1957013719}
+  waterBtn: {fileID: 211159564}
   collection: {fileID: 918513783}
   heatDial: {fileID: 424911031}
   panel: {fileID: 1398061208}

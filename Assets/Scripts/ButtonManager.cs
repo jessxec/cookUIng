@@ -14,6 +14,8 @@ public class ButtonManager : MonoBehaviour
     public Button heat;
     public Button collectable;
     public Button restart;
+    public Button oilBtn;
+    public Button waterBtn;
 
     public GameObject collection;
     public GameObject heatDial;
@@ -125,7 +127,7 @@ public class ButtonManager : MonoBehaviour
             }
 
         }
-        if (temp && gotEgg && (selectedPan || selectedPot) && cookingTime >= 0)
+        if (temp && gotEgg && (selectedPan || selectedPot || selectedSteamer) && cookingTime >= 0)
         {
             cookingTime -= Time.deltaTime * multiplier;
             TimerOn();
@@ -174,11 +176,15 @@ public class ButtonManager : MonoBehaviour
     public void OilButton()
     {
         oil = true;
+        message.text = "u added some oil...";
+        oilBtn.interactable = false;
     }
 
     public void WaterButton()
     {
         water = true;
+        message.text = "u added some water...";
+        waterBtn.interactable = false;
     }
 
     private void TimerOn()
