@@ -29,7 +29,6 @@ public class GameManager : MonoBehaviour
     {
         foreach (var img in collectables)
         {
-            Debug.Log(img.name);
             if (img.name == eggName)
             {
                 img.color = new Color(1, 1, 1, 1);

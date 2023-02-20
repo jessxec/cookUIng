@@ -16,6 +16,8 @@ public class ButtonManager : MonoBehaviour
     public Button restart;
     public Button oilBtn;
     public Button waterBtn;
+    public Button flipBtn;
+    public Scrollbar stirBtn;
 
     public GameObject collection;
     public GameObject heatDial;
@@ -35,11 +37,12 @@ public class ButtonManager : MonoBehaviour
     private bool flip;
     private bool stirBefore;
     private bool stirAfter;
+    
 
     private float multiplier;
     private float cookingTime;
     private float startTime = 50f;
-
+    private int stirSpeed = 0;
 
 
     public Sprite uncookedEgg;
@@ -69,18 +72,17 @@ public class ButtonManager : MonoBehaviour
         temp = false;
         panel.SetActive(false);
         message.text = "make an egg please!";
+        flip = false;
+        flipBtn.interactable = false;
+        stirBefore = false;
+        stirAfter = false;
+        oil = false;
+        water = false;
 
-        //SceneManager.sceneLoaded -= OnSceneLoaded;
-        //SceneManager.sceneLoaded += OnSceneLoaded;
         collection = GameObject.Find("/CollectionPanel/Scroll View");
         Debug.Log("Start Found Collection:" + collection.GetInstanceID());
         collection.SetActive(false);
     }
-
-    /*void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        collection = GameObject.Find("/CollectionPanel/Scroll View");
-    }*/
 
 
     // Update is called once per frame
@@ -92,7 +94,6 @@ public class ButtonManager : MonoBehaviour
             Vector2 mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
             Vector2 direction = (mouseScreenPosition - (Vector2)heatDial.transform.position).normalized;
-            Debug.Log(direction);
             if ((direction.x >= 0.3 || direction.x <= -0.3) && (direction.y >= 0.3 || direction.y <= -0.3))
             {
                 // off
@@ -129,9 +130,48 @@ public class ButtonManager : MonoBehaviour
         }
         if (temp && gotEgg && (selectedPan || selectedPot || selectedSteamer) && cookingTime >= 0)
         {
+            flipBtn.interactable = true;
             cookingTime -= Time.deltaTime * multiplier;
             TimerOn();
         }
+        stirBtn.onValueChanged.AddListener((value) =>
+        {
+            int currentStep = Mathf.RoundToInt(value / (1f / (float)stirBtn.numberOfSteps));
+        });
+
+
+    }
+
+    public void StirBtn()
+    {
+        if ((selectedPan || selectedPot || selectedSteamer) && temp && gotEgg)
+        {
+            stirAfter = true;
+            Debug.Log("after: " + stirAfter);
+        }
+        else { stirBefore = true; Debug.Log("before:" + stirBefore); }
+
+        if (stirBtn.value < 0.33 && stirBtn.value >= 0)
+        {
+            stirSpeed = 0;
+        }
+        else if (stirBtn.value < 0.67 && stirBtn.value >= 0.33)
+        {
+            stirSpeed = 1;
+            message.text = "stiring...";
+        }
+        else
+        {
+            stirSpeed = 2;
+            message.text = "stiring faster!";
+        }
+    }
+
+    public void FlipSwitch()
+    {
+        flip = true;
+        flipBtn.interactable = false;
+        message.text = "egg flip!";
     }
 
     public void EggButton()
@@ -176,14 +216,14 @@ public class ButtonManager : MonoBehaviour
     public void OilButton()
     {
         oil = true;
-        message.text = "u added some oil...";
+        message.text = "u have some oil...";
         oilBtn.interactable = false;
     }
 
     public void WaterButton()
     {
         water = true;
-        message.text = "u added some water...";
+        message.text = "u got some water...";
         waterBtn.interactable = false;
     }
 
@@ -210,23 +250,30 @@ public class ButtonManager : MonoBehaviour
         //bool steamed = selectedSteamer && water && stir;
 
         // fried
-        if ((selectedPan || selectedPot) && oil)
+        if ((selectedPan || selectedPot) && oil && !stirBefore)
         {
+            Debug.Log("fried");
             FriedOptions();
         }
         // boiled
         else if (selectedPot && water)
         {
+            Debug.Log("boiled");
             BoiledOptions();
         // steamed
         } else if (selectedSteamer && water)
         {
+            Debug.Log("steam");
             SteamerOptions();
         } else if ((selectedPot || selectedPan) && oil && stirBefore)
         {
             OmletteOptions();
-        } else
+        } else if ((selectedPan || selectedPot) && !oil && !water)
         {
+            GameManager.S.UpdateCollection("burnt");
+            eggImage.sprite = friedEgg[3];
+            result.text = ("your egg is burnt!! :(, please add oil next time");
+        } else {
             GameManager.S.UpdateCollection("egg");
             eggImage.sprite = uncookedEgg;
             result.text = ("you have an egg! ... uncooked :0");
@@ -240,6 +287,7 @@ public class ButtonManager : MonoBehaviour
 
     private void OmletteOptions()
     {
+        Debug.Log("omlette");
         if (!flip && !stirAfter)
         {
             GameManager.S.UpdateCollection("unscrambled");
@@ -257,11 +305,11 @@ public class ButtonManager : MonoBehaviour
             result.text = ("its a omlette <3");
         }
 
-        else if (cookingTime <= 0 && stirAfter)
+        else if (cookingTime <= 15 && stirAfter)
         // burnt
         {
             GameManager.S.UpdateCollection("burntscrambled");
-            eggImage.sprite = scrambledEgg[3];
+            eggImage.sprite = scrambledEgg[2];
             result.text = ("crispy scrambled eggs :0");
 
         } // uncooked
@@ -269,18 +317,18 @@ public class ButtonManager : MonoBehaviour
         {
             GameManager.S.UpdateCollection("egg");
             eggImage.sprite = uncookedEgg;
-            result.text = ("you have an egg! ... uncooked :0");
+            result.text = ("you have an egg! ... uncooked :(");
         } // scrambled
-        else if (cookingTime < 50 && cookingTime >= 30 && stirAfter)
+        else if (cookingTime < 50 && cookingTime > 15 && stirAfter && stirSpeed == 1)
         {
             GameManager.S.UpdateCollection("scrambled");
-            eggImage.sprite = scrambledEgg[1];
+            eggImage.sprite = scrambledEgg[0];
             result.text = ("scrambled eggs <3");
         } // hard
-        else if (cookingTime < 12 && cookingTime > 0 && stirAfter)
+        else if (cookingTime < 50 && cookingTime > 15 && stirAfter && stirSpeed == 2)
         {
             GameManager.S.UpdateCollection("overscrambled");
-            eggImage.sprite = scrambledEgg[2];
+            eggImage.sprite = scrambledEgg[1];
             result.text = ("overscrambled eggs <3");
         }
 
