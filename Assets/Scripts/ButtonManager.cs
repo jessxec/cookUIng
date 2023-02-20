@@ -15,6 +15,10 @@ public class ButtonManager : MonoBehaviour
     public Button collectable;
     public Button restart;
     public Button oilBtn;
+    public Button stopCooking;
+    public Button ketchup;
+    public Button soy;
+    public Button greenOnions;
     public Button waterBtn;
     public Button flipBtn;
     public Scrollbar stirBtn;
@@ -37,6 +41,10 @@ public class ButtonManager : MonoBehaviour
     private bool flip;
     private bool stirBefore;
     private bool stirAfter;
+    private bool selectedSoy;
+    private bool doneCooking;
+    private bool selectedKetchup;
+    private bool selectedGreens;
     
 
     private float multiplier;
@@ -67,6 +75,10 @@ public class ButtonManager : MonoBehaviour
         gotEgg = false;
         selectedPan = false;
         selectedPot = false;
+        selectedSteamer = false;
+        selectedGreens = false;
+        selectedKetchup = false;
+        selectedSoy = false;
         heatOn = false;
         cookingTime = startTime;
         temp = false;
@@ -78,6 +90,8 @@ public class ButtonManager : MonoBehaviour
         stirAfter = false;
         oil = false;
         water = false;
+        ketchup.interactable = false;
+       
 
         collection = GameObject.Find("/CollectionPanel/Scroll View");
         Debug.Log("Start Found Collection:" + collection.GetInstanceID());
@@ -185,7 +199,7 @@ public class ButtonManager : MonoBehaviour
     {
         selectedPan = true;
         pan.enabled = false;
-        steamer.enabled = false;
+        steamer.interactable = false;
         pot.interactable = false;
         message.text = "u have a pan...";
     }
@@ -194,7 +208,7 @@ public class ButtonManager : MonoBehaviour
     {
         selectedPot = true;
         pot.enabled = false;
-        steamer.enabled = false;
+        steamer.interactable = false;
         pan.interactable = false;
         message.text = "u have a pot...";
     }
@@ -202,9 +216,9 @@ public class ButtonManager : MonoBehaviour
     public void SteamerButton()
     {
         selectedSteamer = true;
-        pot.enabled = false;
-        pan.enabled = false;
-        steamer.interactable = false;
+        pot.interactable = false;
+        pan.interactable = false;
+        steamer.enabled = false;
         message.text = "u have a steamer...";
     }
 
