@@ -10,6 +10,7 @@ public class ButtonManager : MonoBehaviour
     public Button egg;
     public Button pan;
     public Button pot;
+    public Button steamer;
     public Button heat;
     public Button collectable;
     public Button restart;
@@ -142,6 +143,7 @@ public class ButtonManager : MonoBehaviour
     {
         selectedPan = true;
         pan.enabled = false;
+        steamer.enabled = false;
         pot.interactable = false;
         message.text = "u have a pan...";
     }
@@ -150,8 +152,18 @@ public class ButtonManager : MonoBehaviour
     {
         selectedPot = true;
         pot.enabled = false;
+        steamer.enabled = false;
         pan.interactable = false;
         message.text = "u have a pot...";
+    }
+
+    public void SteamerButton()
+    {
+        selectedSteamer = true;
+        pot.enabled = false;
+        pan.enabled = false;
+        steamer.interactable = false;
+        message.text = "u have a steamer...";
     }
 
     public void HeatButton()
@@ -201,7 +213,7 @@ public class ButtonManager : MonoBehaviour
         {
             BoiledOptions();
         // steamed
-        } else if (selectedSteamer&& water)
+        } else if (selectedSteamer && water)
         {
             SteamerOptions();
         } else if ((selectedPot || selectedPan) && oil && stirBefore)

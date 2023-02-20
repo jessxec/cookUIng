@@ -1208,7 +1208,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1495142522}
         m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
-        m_MethodName: PanButton
+        m_MethodName: SteamerButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7077,6 +7077,7 @@ MonoBehaviour:
   egg: {fileID: 1379334390}
   pan: {fileID: 209779256}
   pot: {fileID: 1094760213}
+  steamer: {fileID: 184917561}
   heat: {fileID: 658100233}
   collectable: {fileID: 31615805}
   restart: {fileID: 1532537016}
@@ -7109,7 +7110,6 @@ MonoBehaviour:
   message: {fileID: 1915380196}
   header: {fileID: 1362636954}
   result: {fileID: 559119550}
-  eggIs: 
   eggImage: {fileID: 1813232088}
 --- !u!4 &1495142523
 Transform:
