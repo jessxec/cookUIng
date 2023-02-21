@@ -159,6 +159,7 @@ public class ButtonManager : MonoBehaviour
 
     public void StirBtn()
     {
+        SoundManager.S.MakeLeverSound();
         if ((selectedPan || selectedPot || selectedSteamer) && temp && gotEgg)
         {
             stirAfter = true;
@@ -198,6 +199,7 @@ public class ButtonManager : MonoBehaviour
 
     public void PanButton()
     {
+        SoundManager.S.MakeSizzleSound();
         selectedPan = true;
         pan.enabled = false;
         steamer.interactable = false;
@@ -230,6 +232,7 @@ public class ButtonManager : MonoBehaviour
 
     public void OilButton()
     {
+        SoundManager.S.MakeOilSound();
         oil = true;
         message.text = "u have some oil...";
         oilBtn.interactable = false;
@@ -237,6 +240,7 @@ public class ButtonManager : MonoBehaviour
 
     public void WaterButton()
     {
+        SoundManager.S.MakeWaterSound();
         water = true;
         message.text = "u got some water...";
         waterBtn.interactable = false;
@@ -251,6 +255,7 @@ public class ButtonManager : MonoBehaviour
 
     public void SoyButton()
     {
+        SoundManager.S.MakeSoySound();
         selectedSoy = true;
         message.text = "u added some soy sauce...";
         soy.interactable = false;
@@ -258,6 +263,7 @@ public class ButtonManager : MonoBehaviour
 
     public void KetchupButton()
     {
+        SoundManager.S.MakeKetchupSound();
         selectedKetchup = true;
         message.text = "u added some ketchup...";
         ketchup.interactable = false;
@@ -265,7 +271,9 @@ public class ButtonManager : MonoBehaviour
 
     public void Plate()
     {
-        if (selectedPot && stirBefore)
+        SoundManager.S.MakePlateSound();
+        message.text = "garnish...";
+        if (selectedSteamer && stirBefore)
         {
             soy.interactable = true;
             greenOnions.interactable = true;
@@ -276,7 +284,7 @@ public class ButtonManager : MonoBehaviour
             ketchup.interactable = true;
         }
         
-        heat.interactable = false;
+        //heat.interactable = false;
         stirBtn.interactable = false;
         flipBtn.interactable = false;
     }
@@ -288,6 +296,7 @@ public class ButtonManager : MonoBehaviour
 
     public void GetResults()
     {
+        SoundManager.S.MakeWaterSound();
         temp = false;
         multiplier = 0;
         pan.interactable = false;
