@@ -371,7 +371,7 @@ public class ButtonManager : MonoBehaviour
         if (flip && selectedKetchup)
         {
             GameManager.S.UpdateCollection("ketchupom");
-            eggImage.sprite = omlette[2];
+            eggImage.sprite = omlette[4];
             result.text = ("its a <3 omlette :D");
         }
 
