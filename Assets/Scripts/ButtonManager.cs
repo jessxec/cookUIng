@@ -186,7 +186,7 @@ public class ButtonManager : MonoBehaviour
     public void FlipSwitch()
     {
         flip = true;
-        flipBtn.interactable = false;
+        //flipBtn.interactable = false;
         message.text = "egg flip!";
     }
 
@@ -371,7 +371,7 @@ public class ButtonManager : MonoBehaviour
         if (flip && selectedKetchup)
         {
             GameManager.S.UpdateCollection("ketchupom");
-            eggImage.sprite = omlette[1];
+            eggImage.sprite = omlette[2];
             result.text = ("its a <3 omlette :D");
         }
 
